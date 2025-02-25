@@ -1,7 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { UserRole } from '../../../modules/user/user.enums';
+import { Tables } from '../postgres.constants';
 
-@Entity()
+@Entity({ name: Tables.users })
 export class UserModel {
   @PrimaryGeneratedColumn()
   id: number;

@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Tables } from '../postgres.constants';
 
-@Entity()
+@Entity({ name: Tables.articles })
 export class ArticleModel {
   @PrimaryGeneratedColumn()
   id: number;
