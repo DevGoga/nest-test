@@ -12,6 +12,7 @@ export type EnvStructure<T = any> = {
 
 const envValues: EnvStructure<AppConfigDto> = {
   port: process.env.PORT,
+  redisConnectionString: process.env.REDIS_CONNECTION,
   postgres: {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
