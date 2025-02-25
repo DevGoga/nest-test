@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { RequestWithUser } from '../../app.types';
 import { ArticleModel } from '../../database/postgres/entities';
 import { AuthGuard } from '../../guards';
+import { ResultDto } from '../../shared';
 import { ArticleService } from './article.service';
 import {
   ArticleDto,
@@ -37,8 +38,17 @@ export class ArticleController {
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Обновление статьи' })
   @ApiOkResponse({ type: UpdateArticleDtoExample })
-  @Patch('update/гзвф:id')
+  @Patch('update/:id')
   async update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto, @Request() req: RequestWithUser) {
     return this.articleService.update(+id, updateArticleDto, req.user.id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Удаление статьи' })
+  @ApiOkResponse({ type: ResultDto })
+  @Delete(':id')
+  async remove(@Param('id') id: string, @Request() req: RequestWithUser) {
+    return this.articleService.remove(+id, req.user.id);
   }
 }

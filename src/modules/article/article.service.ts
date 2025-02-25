@@ -63,4 +63,20 @@ export class ArticleService {
 
     return updatedArticle;
   }
+
+  async remove(id: number, userId: number): Promise<boolean> {
+    const article = await this.datasource.getRepository(ArticleModel).findOne({ where: { id } });
+
+    if (!article) {
+      throw new NotFoundException();
+    }
+
+    if (article.authorId !== userId) {
+      throw new ForbiddenException('You are not allowed to delete this article');
+    }
+
+    await this.datasource.getRepository(ArticleModel).delete(id);
+
+    return true;
+  }
 }
