@@ -1,10 +1,17 @@
-import { Body, Controller, Get, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { RequestWithUser } from '../../app.types';
 import { ArticleModel } from '../../database/postgres/entities';
 import { AuthGuard } from '../../guards';
 import { ArticleService } from './article.service';
-import { AllArticleDto, ArticleDto, CreateArticleDto, FindAllArticleQueryDto } from './dto';
+import {
+  ArticleDto,
+  CreateArticleExampleDto,
+  FindAllArticleQueryDto,
+  FindAllArticleQueryDtoExample,
+  UpdateArticleDto,
+  UpdateArticleDtoExample,
+} from './dto';
 
 @Controller('article')
 export class ArticleController {
@@ -13,7 +20,7 @@ export class ArticleController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Создание статьи' })
-  @ApiOkResponse({ type: CreateArticleDto })
+  @ApiOkResponse({ type: CreateArticleExampleDto })
   @Post('create')
   async create(@Body() articleDto: ArticleDto, @Request() req: RequestWithUser): Promise<ArticleModel> {
     return this.articleService.createNewArticle(articleDto, req.user.id);
@@ -21,8 +28,17 @@ export class ArticleController {
 
   @Get('findAll')
   @ApiOperation({ summary: 'Чтение всех статей' })
-  @ApiOkResponse({ type: AllArticleDto })
+  @ApiOkResponse({ type: FindAllArticleQueryDtoExample })
   public async findAll(@Query() query: FindAllArticleQueryDto) {
     return this.articleService.findAll(query);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Обновление статьи' })
+  @ApiOkResponse({ type: UpdateArticleDtoExample })
+  @Patch('update/гзвф:id')
+  async update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto, @Request() req: RequestWithUser) {
+    return this.articleService.update(+id, updateArticleDto, req.user.id);
   }
 }

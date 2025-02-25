@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsString } from 'class-validator';
 
-export class AllArticleDto {
+export class FindAllArticleQueryDtoExample {
   @IsString()
   @IsArray()
   @ApiProperty({

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreateArticleDto {
+export class CreateArticleExampleDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: 'Автор' })
