@@ -1,16 +1,17 @@
-import { Global, Inject, Logger, Module } from '@nestjs/common';
+import { Global, Inject, Logger, Module, OnApplicationShutdown } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { DATASOURCE, dataSourceProvider } from './data-source';
+import { POSTGRES } from './postgres.constants';
+import { postgresProvider } from './postgres.provider';
 
 @Global()
 @Module({
-  providers: [dataSourceProvider],
-  exports: [dataSourceProvider],
+  providers: [postgresProvider],
+  exports: [postgresProvider],
 })
-export class PostgresModule {
+export class PostgresModule implements OnApplicationShutdown {
   private readonly logger = new Logger(PostgresModule.name);
 
-  constructor(@Inject(DATASOURCE) private datasource: DataSource) {}
+  constructor(@Inject(POSTGRES) private datasource: DataSource) {}
 
   public async onApplicationShutdown(): Promise<void> {
     await this.datasource.destroy();

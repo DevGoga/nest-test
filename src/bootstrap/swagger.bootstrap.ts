@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { APP_VERSION } from '../../app.constants';
+import { APP_VERSION } from '../app.constants';
 
 export const bootstrapSwagger = (app: INestApplication) => {
   const title = 'Georgi Zarkya Test API';
@@ -12,6 +12,4 @@ export const bootstrapSwagger = (app: INestApplication) => {
   SwaggerModule.setup('docs', app, document, {
     customSiteTitle: title,
   });
-
-  console.log('Swagger started');
 };

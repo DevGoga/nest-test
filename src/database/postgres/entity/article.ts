@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Articles {
+export class Article {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -11,9 +11,6 @@ export class Articles {
   @Column()
   description: string;
 
-  @Column('date')
-  dateOfPublication: Date;
-
   @Column()
-  author: string;
+  dateOfPublication: Date;
 }

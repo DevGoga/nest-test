@@ -1,14 +1,15 @@
 import 'reflect-metadata';
-import { Provider } from '@nestjs/common';
+import { Logger, Provider } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import appConfig from '../../config';
-import { Articles, Users } from './entity';
+import { Article, User } from './entity';
+import { POSTGRES } from './postgres.constants';
 
-export const DATASOURCE = 'DataSource';
-
-export const dataSourceProvider: Provider<DataSource> = {
-  provide: DATASOURCE,
+export const postgresProvider: Provider<DataSource> = {
+  provide: POSTGRES,
   useFactory: async (): Promise<DataSource> => {
+    const logger = new Logger('Postgres Provider');
+
     const appDataSource = new DataSource({
       type: 'postgres',
       host: appConfig.postgres.host,
@@ -16,16 +17,13 @@ export const dataSourceProvider: Provider<DataSource> = {
       username: appConfig.postgres.username,
       password: appConfig.postgres.password,
       database: appConfig.postgres.database,
-      entities: [Users, Articles],
-      migrations: [],
-      synchronize: true,
+      entities: [User, Article],
       logging: false,
     });
 
-    await appDataSource
-      .initialize()
-      .then(() => console.log('TypeORM successful connect'))
-      .catch((error) => console.log(error));
+    await appDataSource.initialize();
+
+    logger.log('TypeORM successfully connected');
 
     return appDataSource;
   },

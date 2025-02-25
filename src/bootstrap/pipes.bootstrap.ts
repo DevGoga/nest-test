@@ -7,6 +7,4 @@ export const bootstrapPipes = (app: INestApplication) => {
       whitelist: true,
     }),
   );
-
-  console.log('Pipes started');
 };
