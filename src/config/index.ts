@@ -12,6 +12,11 @@ export type EnvStructure<T = any> = {
 
 const envValues: EnvStructure<AppConfigDto> = {
   port: process.env.PORT,
+  passwordRound: process.env.PASSWORD_ROUNDS,
+  jwt: {
+    accessSecret: process.env.JWT_ACCESS_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
+  },
   redisConnectionString: process.env.REDIS_CONNECTION,
   postgres: {
     host: process.env.POSTGRES_HOST,
