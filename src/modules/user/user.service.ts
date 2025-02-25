@@ -1,21 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Inject, Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { UserModel } from '../../database/postgres/entities';
+import { POSTGRES } from '../../database/postgres/postgres.constants';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(UserModel) private readonly userRepository: Repository<UserModel>) {}
+  constructor(@Inject(POSTGRES) private readonly datasource: DataSource) {}
 
   async findOneUserByEmail(email: UserModel['email']): Promise<UserModel | null> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.datasource.getRepository(UserModel).findOne({ where: { email } });
   }
 
   async findUserById(id: UserModel['id']): Promise<UserModel | null> {
-    return this.userRepository.findOne({ where: { id } });
+    return this.datasource.getRepository(UserModel).findOne({ where: { id } });
   }
 
   async createNewUser(user: Partial<UserModel>): Promise<UserModel> {
-    return this.userRepository.create(user);
+    return this.datasource.getRepository(UserModel).create(user);
   }
 }
