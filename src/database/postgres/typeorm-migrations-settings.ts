@@ -4,8 +4,6 @@ import * as entitiesObject from './entities';
 
 export const entities = Object.values(entitiesObject);
 
-console.log(appConfig);
-
 const options: DataSourceOptions = {
   migrations: ['src/database/postgres/migrations/**/*.ts'],
   migrationsTableName: '_migrations',
