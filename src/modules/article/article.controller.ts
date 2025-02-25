@@ -4,7 +4,7 @@ import { RequestWithUser } from '../../app.types';
 import { ArticleModel } from '../../database/postgres/entities';
 import { AuthGuard } from '../../guards';
 import { ArticleService } from './article.service';
-import { ArticleDto, CreateArticleDto, FindAllArticleQueryDto } from './dto';
+import { AllArticleDto, ArticleDto, CreateArticleDto, FindAllArticleQueryDto } from './dto';
 
 @Controller('article')
 export class ArticleController {
@@ -19,7 +19,9 @@ export class ArticleController {
     return this.articleService.createNewArticle(articleDto, req.user.id);
   }
 
-  @Get()
+  @Get('findAll')
+  @ApiOperation({ summary: 'Чтение всех статей' })
+  @ApiOkResponse({ type: AllArticleDto })
   public async findAll(@Query() query: FindAllArticleQueryDto) {
     return this.articleService.findAll(query);
   }
