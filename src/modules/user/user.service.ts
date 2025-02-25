@@ -16,6 +16,6 @@ export class UserService {
   }
 
   async createNewUser(user: Partial<UserModel>): Promise<UserModel> {
-    return this.datasource.getRepository(UserModel).create(user);
+    return this.datasource.getRepository(UserModel).save(user);
   }
 }
