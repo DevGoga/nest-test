@@ -30,8 +30,15 @@ export class ArticleController {
   @Get('findAll')
   @ApiOperation({ summary: 'Чтение всех статей' })
   @ApiOkResponse({ type: FindAllArticleQueryDtoExample })
-  public async findAll(@Query() query: FindAllArticleQueryDto) {
+  async findAll(@Query() query: FindAllArticleQueryDto) {
     return this.articleService.findAll(query);
+  }
+
+  @Get('/findOne/:id')
+  @ApiOperation({ summary: 'Чтение статьи' })
+  @ApiOkResponse({ type: CreateArticleExampleDto })
+  async findOne(@Param('id') id: number) {
+    return this.articleService.findOne(id);
   }
 
   @ApiBearerAuth()

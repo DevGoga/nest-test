@@ -79,4 +79,14 @@ export class ArticleService {
 
     return true;
   }
+
+  async findOne(id: number): Promise<ArticleModel> {
+    const article = await this.datasource.getRepository(ArticleModel).findOne({ where: { id } });
+
+    if (!article) {
+      throw new NotFoundException();
+    }
+
+    return article;
+  }
 }
