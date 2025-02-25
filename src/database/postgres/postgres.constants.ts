@@ -15,4 +15,5 @@ export enum Columns {
   dateOfPublication = 'dateOfPublication',
   createdAt = 'createdAt',
   updatedAt = 'updatedAt',
+  authorId = 'authorId',
 }
