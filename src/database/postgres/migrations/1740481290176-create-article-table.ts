@@ -1,10 +1,9 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-import { UserRole } from '../../../modules/user/user.enums';
 import { Columns, Tables } from '../postgres.constants';
 
-export class CreateUserTable1740472925540 implements MigrationInterface {
+export class CreateArticleTable1740481290176 implements MigrationInterface {
   private readonly table = new Table({
-    name: Tables.users,
+    name: Tables.articles,
     columns: [
       {
         name: Columns.id,
@@ -14,20 +13,28 @@ export class CreateUserTable1740472925540 implements MigrationInterface {
         generationStrategy: 'increment',
       },
       {
-        name: Columns.email,
+        name: Columns.title,
         type: 'varchar',
         length: '255',
       },
       {
-        name: Columns.password,
+        name: Columns.description,
         type: 'varchar',
         length: '255',
       },
       {
-        name: Columns.role,
-        type: 'varchar',
-        length: '255',
-        default: UserRole.user,
+        name: Columns.dateOfPublication,
+        type: 'timestamp',
+      },
+      {
+        name: Columns.createdAt,
+        type: 'timestamp',
+        default: 'now()',
+      },
+      {
+        name: Columns.updatedAt,
+        type: 'timestamp',
+        default: 'now()',
       },
     ],
   });
