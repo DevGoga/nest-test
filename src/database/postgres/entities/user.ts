@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { UserRole } from '../../../modules/user/user.enums';
 import { Tables } from '../postgres.constants';
 
 @Entity({ name: Tables.users })
@@ -13,6 +12,6 @@ export class UserModel {
   @Column()
   password: string;
 
-  @Column({ default: UserRole.user })
-  role: string;
+  @Column()
+  permission: string;
 }

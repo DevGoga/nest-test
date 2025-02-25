@@ -9,7 +9,7 @@ export enum Columns {
   id = 'id',
   email = 'email',
   password = 'password',
-  role = 'role',
+  permission = 'permission',
   title = 'title',
   description = 'description',
   dateOfPublication = 'dateOfPublication',

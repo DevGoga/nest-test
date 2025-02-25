@@ -12,7 +12,7 @@ export class UserDto {
   password: string;
 
   @ApiProperty({ enum: UserRole })
-  role: UserRole;
+  permission: UserRole;
 
   @ApiProperty({ example: '2025-01-24T13:24:32.320Z' })
   createdAt: string;

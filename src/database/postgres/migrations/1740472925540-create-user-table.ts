@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-import { UserRole } from '../../../modules/user/user.enums';
 import { Columns, Tables } from '../postgres.constants';
 
 export class CreateUserTable1740472925540 implements MigrationInterface {
@@ -24,10 +23,9 @@ export class CreateUserTable1740472925540 implements MigrationInterface {
         length: '255',
       },
       {
-        name: Columns.role,
+        name: Columns.permission,
         type: 'varchar',
         length: '255',
-        default: UserRole.user,
       },
     ],
   });

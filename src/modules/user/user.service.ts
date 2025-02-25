@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserModel } from '../../database/postgres/entities';
 import { POSTGRES } from '../../database/postgres/postgres.constants';
+import { UserRole } from './user.enums';
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,6 @@ export class UserService {
   }
 
   async createNewUser(user: Partial<UserModel>): Promise<UserModel> {
-    return this.datasource.getRepository(UserModel).save(user);
+    return this.datasource.getRepository(UserModel).save({ ...user, permission: UserRole.base });
   }
 }

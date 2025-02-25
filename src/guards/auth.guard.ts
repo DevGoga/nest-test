@@ -1,10 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { RequestWithUser } from '../app.types';
 import { AuthService } from '../modules/auth/auth.service';
+import { UserService } from '../modules/user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   async canActivate(context: ExecutionContext) {
     if (context.getType() !== 'http') {
@@ -25,7 +29,13 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const user = await this.authService.decode(accessToken, 'access');
+    const payload = await this.authService.decode(accessToken);
+
+    if (!payload) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userService.findUserById(payload.id);
 
     if (!user) {
       throw new UnauthorizedException();

@@ -3,7 +3,6 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { JWT_ACCESS_TTL } from '../../app.constants';
 import appConfig from '../../config';
-import { UserModel } from '../../database/postgres/entities';
 import { UserService } from '../user/user.service';
 import { TokenPair, TokenPayload, TokenType } from './auth.types';
 import { LoginDto, SignupDto } from './dto';
@@ -34,7 +33,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return this.makeTokenPair(user);
+    return this.makeTokenPair({ id: user.id });
   }
 
   async verify(token: string, type: TokenType): Promise<boolean> {
@@ -54,7 +53,7 @@ export class AuthService {
     });
   }
 
-  async decode(token: string, type: TokenType): Promise<UserModel> {
+  async decode(token: string): Promise<TokenPayload> {
     const valid = await this.verify(token, 'access');
 
     if (!valid) {
@@ -67,7 +66,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return decoded as UserModel;
+    return decoded as TokenPayload;
   }
 
   private makeTokenPair(payload: TokenPayload): TokenPair {
