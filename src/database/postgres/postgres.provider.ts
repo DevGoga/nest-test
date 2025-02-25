@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Logger, Provider } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import appConfig from '../../config';
-import { Article, User } from './entity';
+import * as entities from './entities';
 import { POSTGRES } from './postgres.constants';
 
 export const postgresProvider: Provider<DataSource> = {
@@ -17,7 +17,7 @@ export const postgresProvider: Provider<DataSource> = {
       username: appConfig.postgres.username,
       password: appConfig.postgres.password,
       database: appConfig.postgres.database,
-      entities: [User, Article],
+      entities,
       logging: false,
     });
 
