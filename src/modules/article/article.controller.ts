@@ -13,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { RequestWithUser } from '../../app.types';
-import { ArticleModel, UserModel } from '../../database/postgres/entities';
-import { User } from '../../decorators/user';
+import { UserModel } from '../../database/postgres/entities';
+import { User } from '../../decorators';
 import { AuthGuard } from '../../guards';
 import { ResultDto } from '../../shared';
 import { ArticleService } from './article.service';
@@ -38,21 +38,21 @@ export class ArticleController {
   async create(
     @Body() articleDto: CreateArticleRequestBodyDto,
     @Request() req: RequestWithUser,
-  ): Promise<ArticleModel> {
+  ): Promise<ArticleResponseBodyDto> {
     return this.articleService.create(articleDto, req.user.id);
   }
 
   @Get()
   @ApiOperation({ summary: 'Чтение всех статей' })
   @ApiOkResponse({ type: FindAllArticleResponseBodyDto })
-  async findAll(@Query() query: FindAllArticleRequestQueryDto) {
+  async findAll(@Query() query: FindAllArticleRequestQueryDto): Promise<FindAllArticleResponseBodyDto> {
     return this.articleService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Чтение статьи' })
   @ApiOkResponse({ type: ArticleResponseBodyDto })
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number): Promise<ArticleResponseBodyDto> {
     return this.articleService.findOne(id);
   }
 
@@ -65,7 +65,7 @@ export class ArticleController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() dto: UpdateArticleRequestBodyDto,
     @User() user: UserModel,
-  ) {
+  ): Promise<ArticleResponseBodyDto> {
     return this.articleService.update(id, dto, user.id);
   }
 
@@ -74,7 +74,7 @@ export class ArticleController {
   @ApiOperation({ summary: 'Удаление статьи' })
   @ApiOkResponse({ type: ResultDto })
   @Delete(':id')
-  async remove(@Param('id', new ParseIntPipe()) id: number, @User() user: UserModel) {
+  async remove(@Param('id', new ParseIntPipe()) id: number, @User() user: UserModel): Promise<ResultDto> {
     return this.articleService.remove(id, user.id);
   }
 }
