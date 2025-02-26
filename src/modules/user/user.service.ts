@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserModel } from '../../database/postgres/entities';
 import { POSTGRES } from '../../database/postgres/postgres.constants';
-import { UserRole } from './user.enums';
+import { UserPermission } from './user.enums';
 
 @Injectable()
 export class UserService {
@@ -12,11 +12,17 @@ export class UserService {
     return this.datasource.getRepository(UserModel).findOne({ where: { email } });
   }
 
-  async findUserById(id: UserModel['id']): Promise<UserModel | null> {
-    return this.datasource.getRepository(UserModel).findOne({ where: { id } });
+  async findUserById(id: UserModel['id']): Promise<UserModel> {
+    const user = await this.datasource.getRepository(UserModel).findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 
-  async createNewUser(user: Partial<UserModel>): Promise<UserModel> {
-    return this.datasource.getRepository(UserModel).save({ ...user, permission: UserRole.base });
+  async create(user: Partial<UserModel>): Promise<UserModel> {
+    return this.datasource.getRepository(UserModel).save({ ...user, permission: UserPermission.base });
   }
 }

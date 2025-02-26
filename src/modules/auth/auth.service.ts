@@ -18,7 +18,7 @@ export class AuthService {
       throw new ConflictException(`User already exists`);
     }
 
-    await this.userService.createNewUser({
+    await this.userService.create({
       email: dto.email,
       password: hashSync(dto.password, appConfig.passwordRound),
     });
@@ -26,7 +26,7 @@ export class AuthService {
     return true;
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<TokenPair> {
     const user = await this.userService.findOneUserByEmail(dto.email);
 
     if (!user || !compareSync(dto.password, user.password)) {

@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class FindAllArticleQueryDto {
+export class FindAllArticleRequestQueryDto {
   @ApiPropertyOptional({ example: 1 })
   @IsOptional()
   @IsNumber()

@@ -1,7 +1,7 @@
-import { FindAllArticleQueryDto } from '../../modules/article/dto';
+import { FindAllArticleRequestQueryDto } from '../../modules/article/dto';
 import { ArticleModel } from '../postgres/entities';
 
-export const findAllArticlesCachingKey = (query: FindAllArticleQueryDto) => {
+export const findAllArticlesCachingKey = (query: FindAllArticleRequestQueryDto) => {
   const { authorId, offset, limit, search } = query;
 
   return `articles-cache-${authorId}-${offset}-${limit}-${search}`;

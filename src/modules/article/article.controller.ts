@@ -1,17 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { RequestWithUser } from '../../app.types';
-import { ArticleModel } from '../../database/postgres/entities';
+import { ArticleModel, UserModel } from '../../database/postgres/entities';
+import { User } from '../../decorators/user';
 import { AuthGuard } from '../../guards';
 import { ResultDto } from '../../shared';
 import { ArticleService } from './article.service';
 import {
-  ArticleDto,
-  CreateArticleExampleDto,
-  FindAllArticleQueryDto,
-  FindAllArticleQueryDtoExample,
-  UpdateArticleDto,
-  UpdateArticleDtoExample,
+  ArticleResponseBodyDto,
+  CreateArticleRequestBodyDto,
+  FindAllArticleRequestQueryDto,
+  FindAllArticleResponseBodyDto,
+  UpdateArticleRequestBodyDto,
 } from './dto';
 
 @Controller('article')
@@ -21,22 +33,25 @@ export class ArticleController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Создание статьи' })
-  @ApiOkResponse({ type: CreateArticleExampleDto })
-  @Post('create')
-  async create(@Body() articleDto: ArticleDto, @Request() req: RequestWithUser): Promise<ArticleModel> {
-    return this.articleService.createNewArticle(articleDto, req.user.id);
+  @ApiCreatedResponse({ type: ArticleResponseBodyDto })
+  @Post()
+  async create(
+    @Body() articleDto: CreateArticleRequestBodyDto,
+    @Request() req: RequestWithUser,
+  ): Promise<ArticleModel> {
+    return this.articleService.create(articleDto, req.user.id);
   }
 
-  @Get('findAll')
+  @Get()
   @ApiOperation({ summary: 'Чтение всех статей' })
-  @ApiOkResponse({ type: FindAllArticleQueryDtoExample })
-  async findAll(@Query() query: FindAllArticleQueryDto) {
+  @ApiOkResponse({ type: FindAllArticleResponseBodyDto })
+  async findAll(@Query() query: FindAllArticleRequestQueryDto) {
     return this.articleService.findAll(query);
   }
 
-  @Get('/findOne/:id')
+  @Get(':id')
   @ApiOperation({ summary: 'Чтение статьи' })
-  @ApiOkResponse({ type: CreateArticleExampleDto })
+  @ApiOkResponse({ type: ArticleResponseBodyDto })
   async findOne(@Param('id') id: number) {
     return this.articleService.findOne(id);
   }
@@ -44,10 +59,14 @@ export class ArticleController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Обновление статьи' })
-  @ApiOkResponse({ type: UpdateArticleDtoExample })
-  @Patch('update/:id')
-  async update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto, @Request() req: RequestWithUser) {
-    return this.articleService.update(+id, updateArticleDto, req.user.id);
+  @ApiOkResponse({ type: ArticleResponseBodyDto })
+  @Put(':id')
+  async update(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() dto: UpdateArticleRequestBodyDto,
+    @User() user: UserModel,
+  ) {
+    return this.articleService.update(id, dto, user.id);
   }
 
   @ApiBearerAuth()
@@ -55,7 +74,7 @@ export class ArticleController {
   @ApiOperation({ summary: 'Удаление статьи' })
   @ApiOkResponse({ type: ResultDto })
   @Delete(':id')
-  async remove(@Param('id') id: string, @Request() req: RequestWithUser) {
-    return this.articleService.remove(+id, req.user.id);
+  async remove(@Param('id', new ParseIntPipe()) id: number, @User() user: UserModel) {
+    return this.articleService.remove(id, user.id);
   }
 }

@@ -6,7 +6,6 @@ import { REDIS } from './redis.constants';
 export const redisProvider: Provider = {
   provide: REDIS,
   useFactory: async () => {
-    console.log(appConfig.redisConnectionString);
     const client = createClient({ url: appConfig.redisConnectionString });
     await client.connect();
 

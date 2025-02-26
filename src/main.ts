@@ -5,6 +5,7 @@ import { APP_NAME, APP_VERSION } from './app.constants';
 import { AppModule } from './app.module';
 import { bootstrapPipes, bootstrapSwagger } from './bootstrap';
 import appConfig from './config';
+import { ExceptionFilter } from './filters/exception-filter';
 import { developmentStrategy, PinoService, productionStrategy } from './logger';
 
 async function bootstrap() {
@@ -17,6 +18,8 @@ async function bootstrap() {
 
   bootstrapSwagger(app);
   bootstrapPipes(app);
+
+  app.useGlobalFilters(new ExceptionFilter());
 
   await app.listen(appConfig.port);
 

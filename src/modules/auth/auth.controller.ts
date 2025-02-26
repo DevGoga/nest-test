@@ -20,7 +20,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Вход для зарегистрированного пользователя' })
   @ApiCreatedResponse({ type: TokenPairDto })
-  async login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginDto): Promise<TokenPairDto> {
     return this.authService.login(dto);
   }
 }
