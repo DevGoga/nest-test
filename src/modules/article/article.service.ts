@@ -27,7 +27,7 @@ export class ArticleService {
     article.authorId = userId;
     article.dateOfPublication = new Date();
 
-    return this.datasource.getRepository(ArticleModel).save(article);
+    return await this.datasource.getRepository(ArticleModel).save(article);
   }
 
   async findAll(query: FindAllArticleRequestQueryDto): Promise<FindAllArticleResponseBodyDto> {

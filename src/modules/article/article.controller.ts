@@ -1,18 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-  Query,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { RequestWithUser } from '../../app.types';
 import { UserModel } from '../../database/postgres/entities';
 import { User } from '../../decorators';
 import { AuthGuard } from '../../guards';
@@ -35,11 +22,8 @@ export class ArticleController {
   @ApiOperation({ summary: 'Создание статьи' })
   @ApiCreatedResponse({ type: ArticleResponseBodyDto })
   @Post()
-  async create(
-    @Body() articleDto: CreateArticleRequestBodyDto,
-    @Request() req: RequestWithUser,
-  ): Promise<ArticleResponseBodyDto> {
-    return this.articleService.create(articleDto, req.user.id);
+  async create(@Body() dto: CreateArticleRequestBodyDto, @User() user: UserModel): Promise<ArticleResponseBodyDto> {
+    return this.articleService.create(dto, user.id);
   }
 
   @Get()
