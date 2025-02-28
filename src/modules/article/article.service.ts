@@ -21,6 +21,10 @@ export class ArticleService {
     private readonly redisService: RedisService,
   ) {}
 
+  private async flushCache(id: ArticleModel['id']): Promise<void> {
+    await this.redisService.delete(findOneArticleCachingKey(id));
+  }
+
   async create(dto: CreateArticleRequestBodyDto, userId: number): Promise<ArticleModel> {
     const article = this.datasource.getRepository(ArticleModel).create(dto);
 
@@ -77,6 +81,7 @@ export class ArticleService {
     }
 
     await this.datasource.getRepository(ArticleModel).update(id, dto);
+    await this.flushCache(id);
 
     return this.findOne(id);
   }
@@ -92,9 +97,9 @@ export class ArticleService {
       throw new ForbiddenException('You are not allowed to delete this article');
     }
 
-    await this.redisService.delete(findOneArticleCachingKey(id));
-
     await this.datasource.getRepository(ArticleModel).delete(id);
+
+    await this.flushCache(id);
 
     return { result: true };
   }
