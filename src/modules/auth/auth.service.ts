@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { JWT_ACCESS_TTL } from '../../app.constants';
@@ -9,6 +9,8 @@ import { LoginDto, SignupDto } from './dto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger('AuthService');
+
   constructor(private readonly userService: UserService) {}
 
   async signup(dto: SignupDto) {
@@ -22,6 +24,8 @@ export class AuthService {
       email: dto.email,
       password: hashSync(dto.password, appConfig.passwordRound),
     });
+
+    this.logger.log(`Registered new user (email=${dto.email})`);
 
     return true;
   }
