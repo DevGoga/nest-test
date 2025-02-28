@@ -4,7 +4,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { Test } from '@nestjs/testing';
 import { compareSync, hashSync } from 'bcrypt';
 import request from 'supertest';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { UserModel } from '../src/database/postgres/entities';
 import { POSTGRES } from '../src/database/postgres/postgres.constants';
@@ -15,6 +15,8 @@ import { UserService } from '../src/modules/user/user.service';
 describe('User', () => {
   let app: INestApplication;
   let datasource: DataSource;
+  const createdUserEmails: string[] = [];
+  const addEmail = (email: string) => createdUserEmails.push(email);
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -33,7 +35,7 @@ describe('User', () => {
   });
 
   afterAll(async () => {
-    await datasource.getRepository(UserModel).delete({});
+    await datasource.getRepository(UserModel).delete({ email: In(createdUserEmails) });
     await app.close();
   });
 
@@ -46,6 +48,8 @@ describe('User', () => {
       email: faker.internet.email(),
       password: faker.internet.password(),
     };
+
+    addEmail(body.email);
 
     const response = await request(app.getHttpServer()).post('/signup').send(body).expect(201);
 
@@ -64,6 +68,8 @@ describe('User', () => {
       password: faker.internet.password(),
     };
 
+    addEmail(body.email);
+
     await request(app.getHttpServer()).post('/signup').send(body).expect(201);
     await request(app.getHttpServer()).post('/signup').send(body).expect(409);
   });
@@ -77,6 +83,8 @@ describe('User', () => {
       email,
       password: rawPassword,
     };
+
+    addEmail(loginBody.email);
 
     const user: Partial<UserModel> = {
       email,

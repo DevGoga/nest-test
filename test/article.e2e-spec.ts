@@ -20,6 +20,7 @@ describe('Article', () => {
   let datasource: DataSource;
   let redisService: RedisService;
   let authHeader: string;
+  let userEmail: string;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -33,17 +34,17 @@ describe('Article', () => {
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
 
-    const email = faker.internet.email();
+    userEmail = faker.internet.email();
     const rawPassword = faker.internet.password();
     const rounds = 10;
 
     const loginBody: LoginDto = {
-      email,
+      email: userEmail,
       password: rawPassword,
     };
 
     const user: Partial<UserModel> = {
-      email,
+      email: userEmail,
       password: hashSync(rawPassword, rounds),
     };
 
@@ -55,7 +56,7 @@ describe('Article', () => {
 
   afterAll(async () => {
     await datasource.getRepository(ArticleModel).delete({});
-    await datasource.getRepository(UserModel).delete({});
+    await datasource.getRepository(UserModel).delete({ email: userEmail });
     await app.close();
   });
 
@@ -125,27 +126,28 @@ describe('Article', () => {
     expect(cache).toEqual(expect.objectContaining(article.body));
   });
 
-  // it('Delete should work as expected', async () => {
-  //   // TODO: Непонятно почему, но тест не проходит. В базу не сохраняется, хотя через сваггер всё работает
-  //   const body: CreateArticleRequestBodyDto = {
-  //     title: faker.book.title(),
-  //     description: faker.lorem.sentence(),
-  //   };
-  //
-  //   const response = await request(app.getHttpServer())
-  //     .post('/article')
-  //     .set('Authorization', authHeader)
-  //     .send(body)
-  //     .expect(201);
-  //
-  //   const deleteResponse = await request(app.getHttpServer())
-  //     .delete(`/article/${response.body.id}`)
-  //     .set('Authorization', authHeader)
-  //     .expect(200);
-  //
-  //   const dbArticle = await datasource.getRepository(ArticleModel).findOne({ where: { id: response.body.id } });
-  //
-  //   expect(dbArticle).toBeNull();
-  //   expect(deleteResponse).toEqual({ result: true });
-  // });
+  it('Delete should work as expected. And should flush cache', async () => {
+    const body: CreateArticleRequestBodyDto = {
+      title: faker.book.title(),
+      description: faker.lorem.sentence(),
+    };
+
+    const response = await request(app.getHttpServer())
+      .post('/article')
+      .set('Authorization', authHeader)
+      .send(body)
+      .expect(201);
+
+    const deleteResponse = await request(app.getHttpServer())
+      .delete(`/article/${response.body.id}`)
+      .set('Authorization', authHeader)
+      .expect(200);
+
+    const dbArticle = await datasource.getRepository(ArticleModel).findOne({ where: { id: response.body.id } });
+    const cache = await redisService.get(findOneArticleCachingKey(response.body.id));
+
+    expect(dbArticle).toBeNull();
+    expect(cache).toBeNull();
+    expect(deleteResponse.body).toEqual({ result: true });
+  });
 });
