@@ -11,7 +11,7 @@ import { POSTGRES } from '../src/database/postgres/postgres.constants';
 import { findOneArticleCachingKey } from '../src/database/redis/redis.keys';
 import { RedisService } from '../src/database/redis/redis.service';
 import { ArticleService } from '../src/modules/article/article.service';
-import { CreateArticleRequestBodyDto } from '../src/modules/article/dto';
+import { CreateArticleRequestBodyDto, UpdateArticleRequestBodyDto } from '../src/modules/article/dto';
 import { LoginDto } from '../src/modules/auth/dto';
 import { UserPermission } from '../src/modules/user/user.enums';
 
@@ -149,5 +149,29 @@ describe('Article', () => {
     expect(dbArticle).toBeNull();
     expect(cache).toBeNull();
     expect(deleteResponse.body).toEqual({ result: true });
+  });
+
+  it('Update should work as expected', async () => {
+    const body: UpdateArticleRequestBodyDto = {
+      title: faker.book.title(),
+      description: faker.lorem.sentence(),
+    };
+
+    const response = await request(app.getHttpServer())
+      .post('/article')
+      .set('Authorization', authHeader)
+      .send(body)
+      .expect(201);
+
+    const updateResponse = await request(app.getHttpServer())
+      .put(`/article/${response.body.id}`)
+      .set('Authorization', authHeader)
+      .send(body)
+      .expect(200);
+
+    const cache = await redisService.get(findOneArticleCachingKey(response.body.id));
+
+    expect(cache).toEqual(expect.objectContaining(body));
+    expect(updateResponse.body).toBeDefined();
   });
 });

@@ -81,6 +81,7 @@ export class ArticleService {
     }
 
     await this.datasource.getRepository(ArticleModel).update(id, dto);
+
     await this.flushCache(id);
 
     return this.findOne(id);
