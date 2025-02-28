@@ -85,7 +85,7 @@ describe('User', () => {
 
     await datasource.getRepository(UserModel).save({ ...user, permission: UserPermission.base });
 
-    await request(app.getHttpServer()).post('/login').send(loginBody).expect(201);
+    await request(app.getHttpServer()).post('/login').send(loginBody).expect(200);
     await request(app.getHttpServer())
       .post('/login')
       .send({
