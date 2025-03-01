@@ -102,4 +102,21 @@ describe('User', () => {
       })
       .expect(401);
   });
+
+  it('Getting user by id should be available only to admin permission', async () => {
+    const body: SignupDto = {
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    };
+
+    addEmail(body.email);
+
+    const response = await request(app.getHttpServer()).post('/signup').send(body).expect(201);
+
+    const responseLogin = await request(app.getHttpServer()).post('/login').send(body).expect(200);
+
+    const authHeader = 'Bearer ' + responseLogin.body.accessToken;
+
+    await request(app.getHttpServer()).get(`/user/${response.body.id}`).set('Authorization', authHeader).expect(403);
+  });
 });
